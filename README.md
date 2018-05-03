@@ -8,6 +8,12 @@ pytorch replicate of TP-GAN ["Beyond Face Rotation: Global and Local Perception 
 - remove the last tanh activation in generator
 - change the first conv and the first residual block in decoder of generator's kernel size from 2 to 3
 
+## requirements
+
+- python3
+- tensorboardX
+- pytorch 0.3.1
+
 ## usage
 
 to train feature extract models

@@ -71,7 +71,7 @@ class LocalFuser(nn.Module):
         f_left_eye = torch.nn.functional.pad(f_left_eye , (39 - EYE_W//2  - 1 ,IMG_SIZE - (39 + EYE_W//2 - 1) ,40 - EYE_H//2 - 1, IMG_SIZE - (40 + EYE_H//2 - 1)))
         f_right_eye = torch.nn.functional.pad(f_right_eye,(86 - EYE_W//2  - 1 ,IMG_SIZE - (86 + EYE_W//2 - 1) ,39 - EYE_H//2 - 1, IMG_SIZE - (39 + EYE_H//2 - 1)))
         f_nose = torch.nn.functional.pad(f_nose,          (64 - NOSE_W//2 - 1 ,IMG_SIZE - (64 + NOSE_W//2 -1) ,64 - NOSE_H//2- 1, IMG_SIZE - (64 + NOSE_H//2- 1)))
-        f_mouth = torch.nn.functional.pad(f_mouth,        (84 - MOUTH_W//2 -1 ,IMG_SIZE - (84 + MOUTH_W//2 -1),89 - MOUTH_H//2-1, IMG_SIZE - (89 + MOUTH_H//2-1)))
+        f_mouth = torch.nn.functional.pad(f_mouth,        (84 - MOUTH_W//2 -1 ,IMG_SIZE - (84 + MOUTH_W//2 -1),65 - MOUTH_H//2-1, IMG_SIZE - (65 + MOUTH_H//2-1)))
         return torch.max( torch.stack( [ f_left_eye , f_right_eye , f_nose , f_mouth] , dim = 0  ) , dim = 0 )[0]
 
 class GlobalPathway(nn.Module):
