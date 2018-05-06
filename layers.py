@@ -31,12 +31,13 @@ def conv( in_channels , out_channels , kernel_size , stride = 1  , padding  = 0 
     if type(padding) == type(list()) :
         assert len(padding) != 3 
         if len(padding)==4:
-            convs.append( torch.nn.ReflectionPad2d( padding ) )
+            convs.append( nn.ReflectionPad2d( padding ) )
             padding = 0
 
+    #print(padding)
     convs.append( nn.Conv2d( in_channels , out_channels , kernel_size , stride , padding ) )
     #weight init
-    weight_initialization( convs[0].weight , init , activation )
+    weight_initialization( convs[-1].weight , init , activation )
     #activation
     if not activation is None:
         convs.append( activation )

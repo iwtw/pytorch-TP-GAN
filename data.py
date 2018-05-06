@@ -2,7 +2,6 @@ from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 from PIL import Image
 import numpy as np
-import face_alignment
 from math import floor
 from utils import landmarks_68_to_5
 
@@ -57,9 +56,9 @@ class TrainDataset( Dataset):
             batch[k] = totensor( batch[k] ) 
             batch[k] = batch[k] *2.0 -1.0
             #if batch[k].max() <= 0.9:
-                print( "{} {} {}".format( batch[k].max(), self.img_list[idx] , k  ))
+            #    print( "{} {} {}".format( batch[k].max(), self.img_list[idx] , k  ))
             #if batch[k].min() >= -0.9:
-                print( "{} {} {}".format( batch[k].min() , self.img_list[idx] , k ) )
+            #    print( "{} {} {}".format( batch[k].min() , self.img_list[idx] , k ) )
 
         batch['label'] = int( self.img_list[idx].split('/')[-1].split('_')[0] )
         return batch

@@ -93,23 +93,23 @@ class GlobalPathway(nn.Module):
         #encoder
         #128x128
         self.conv0 = sequential( conv( 3   , n_fm_encoder[0]  , 7 , 1 , 3 , "kaiming" , nn.LeakyReLU(1e-2) , use_batchnorm),
-                                    ResidualBlock( 64 , 64 , 7 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , scaling_factor = scaling_factor)
+                                    ResidualBlock( 64 , 64 , 7 , 1 , 3 , "kaiming" , nn.LeakyReLU(1e-2) , scaling_factor = scaling_factor)
                                   )
         #64x64
         self.conv1 = sequential( conv( n_fm_encoder[1]  , n_fm_encoder[1]  , 5 , 2 , 2 , "kaiming" , nn.LeakyReLU(1e-2) , use_batchnorm),
-                                    ResidualBlock( 64 , 64 , 5 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , scaling_factor = scaling_factor)
+                                    ResidualBlock( 64 , 64 , 5 , 1 , 2 , "kaiming" , nn.LeakyReLU(1e-2) , scaling_factor = scaling_factor)
                                   )
         #32x32
         self.conv2 = sequential( conv( n_fm_encoder[1]  , n_fm_encoder[2] , 3 , 2 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , use_batchnorm),
-                                    ResidualBlock( 128 , 128 , 3 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , scaling_factor = scaling_factor)
+                                    ResidualBlock( 128 , 128 , 3 , 1 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , scaling_factor = scaling_factor)
                                   )
         #16x16
         self.conv3 = sequential( conv( n_fm_encoder[2] , n_fm_encoder[3] , 3 , 2 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , use_batchnorm),
-                                    ResidualBlock( 256 , 256 , 3 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , is_bottleneck = False , scaling_factor = scaling_factor)
+                                    ResidualBlock( 256 , 256 , 3 , 1 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , is_bottleneck = False , scaling_factor = scaling_factor)
                                   )
         #8x8
         self.conv4 = sequential( conv( n_fm_encoder[3] , n_fm_encoder[4] , 3 , 2 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , use_batchnorm),
-                                    *[ ResidualBlock( 512 , 512 , 3 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , is_bottleneck = False , scaling_factor = scaling_factor) for i in range(4) ]
+                                    *[ ResidualBlock( 512 , 512 , 3 , 1 , 1 , "kaiming" , nn.LeakyReLU(1e-2) , is_bottleneck = False , scaling_factor = scaling_factor) for i in range(4) ]
                                   )
         self.fc1 = nn.Linear( n_fm_encoder[4]*8*8 , 512)
         self.fc2 = nn.MaxPool1d( 2 , 2 , 0)
@@ -122,7 +122,7 @@ class GlobalPathway(nn.Module):
 
         dim8 = self.initial_8.out_channels + self.conv4.out_channels
         self.before_select_8 = ResidualBlock( dim8 , dim8 , 2 , 1 , padding = [1,0,1,0] , activation = nn.LeakyReLU() )
-        self.reconstruct_8 = sequential( *[ResidualBlock( dim8 , 2 , 1 , padding = [1,0,1,0] , activation = nn.LeakyReLU() ) for i in range(2)] )
+        self.reconstruct_8 = sequential( *[ResidualBlock( dim8 , dim8 , 2 , 1 , padding = [1,0,1,0] , activation = nn.LeakyReLU() ) for i in range(2)] )
 
         
         self.reconstruct_deconv_16 = deconv( self.reconstruct_8.out_channels , n_fm_decoder_reconstruct[0] , 3 , 2 , 1 , 1, 'kaiming' , nn.ReLU() , use_batchnorm )
