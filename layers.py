@@ -28,6 +28,12 @@ def weight_initialization( weight , init , activation):
 
 def conv( in_channels , out_channels , kernel_size , stride = 1  , padding  = 0 , init = "kaiming" , activation = nn.ReLU() , use_batchnorm = False ):
     convs = []
+    if type(padding) == type(list()) :
+        assert len(padding) != 3 
+        if len(padding)==4:
+            convs.append( torch.nn.ReflectionPad2d( padding ) )
+            padding = 0
+
     convs.append( nn.Conv2d( in_channels , out_channels , kernel_size , stride , padding ) )
     #weight init
     weight_initialization( convs[0].weight , init , activation )
@@ -61,9 +67,10 @@ class ResidualBlock(nn.Module):
                 out_channels = None, 
                 kernel_size = 3, 
                 stride = 1,
+                padding = None , 
                 weight_init = "kaiming" , 
                 activation = nn.ReLU() ,
-                is_bottleneck = True ,
+                is_bottleneck = False ,
                 use_projection = False,
                 scaling_factor = 1.0
                 ):
@@ -86,8 +93,8 @@ class ResidualBlock(nn.Module):
             convs.append( conv( in_channels//2  , out_channels//2 , kernel_size , stride , (kernel_size - 1)//2 , weight_init , activation , False))
             convs.append( conv( out_channels//2 , out_channels    , 1 , 1 , 0 , None , None       , False))
         else:
-            convs.append( conv( in_channels , in_channels  , kernel_size , 1 , (kernel_size - 1)//2 , weight_init , activation , False))
-            convs.append( conv( in_channels , out_channels , kernel_size , 1 , (kernel_size - 1)//2 , None , None       , False))
+            convs.append( conv( in_channels , in_channels  , kernel_size , 1 , padding if padding is not None else (kernel_size - 1)//2 , weight_init , activation , False))
+            convs.append( conv( in_channels , out_channels , kernel_size , 1 , padding if padding is not None else (kernel_size - 1)//2 , None , None       , False))
         
         self.layers = nn.Sequential( *convs )
     def forward(self,x):

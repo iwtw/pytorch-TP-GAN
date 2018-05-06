@@ -56,6 +56,10 @@ class TrainDataset( Dataset):
         for k in batch:
             batch[k] = totensor( batch[k] ) 
             batch[k] = batch[k] *2.0 -1.0
+            #if batch[k].max() <= 0.9:
+                print( "{} {} {}".format( batch[k].max(), self.img_list[idx] , k  ))
+            #if batch[k].min() >= -0.9:
+                print( "{} {} {}".format( batch[k].min() , self.img_list[idx] , k ) )
 
         batch['label'] = int( self.img_list[idx].split('/')[-1].split('_')[0] )
         return batch

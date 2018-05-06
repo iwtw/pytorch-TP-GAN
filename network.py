@@ -121,8 +121,8 @@ class GlobalPathway(nn.Module):
         self.initial_128  = deconv( n_fm_decoder_initial[2] , n_fm_decoder_initial[3] , 3 , 2 , 1 , 1 , "kaiming" , nn.ReLU() , use_batchnorm)
 
         dim8 = self.initial_8.out_channels + self.conv4.out_channels
-        self.before_select_8 = ResidualBlock( dim8 , dim8 , 3 , activation = nn.LeakyReLU() )
-        self.reconstruct_8 = sequential( *[ResidualBlock( dim8 , activation = nn.LeakyReLU() ) for i in range(2)] )
+        self.before_select_8 = ResidualBlock( dim8 , dim8 , 2 , 1 , padding = [1,0,1,0] , activation = nn.LeakyReLU() )
+        self.reconstruct_8 = sequential( *[ResidualBlock( dim8 , 2 , 1 , padding = [1,0,1,0] , activation = nn.LeakyReLU() ) for i in range(2)] )
 
         
         self.reconstruct_deconv_16 = deconv( self.reconstruct_8.out_channels , n_fm_decoder_reconstruct[0] , 3 , 2 , 1 , 1, 'kaiming' , nn.ReLU() , use_batchnorm )
@@ -134,13 +134,13 @@ class GlobalPathway(nn.Module):
         dim32 = self.conv2.out_channels + self.initial_32.out_channels + 3
         self.before_select_32 = ResidualBlock( dim32 , activation = nn.LeakyReLU() )
         self.reconstruct_32 = sequential( *[ResidualBlock( dim32 + n_fm_decoder_reconstruct[1]   , activation = nn.LeakyReLU()) for i in range(2) ]  )
-        self.decoded_img32 = conv( self.reconstruct_32.out_channels , 3 , 1 , 1 , 0 , None ,  None )
+        self.decoded_img32 = conv( self.reconstruct_32.out_channels , 3 , 3 , 1 , 1 , None ,  None )
 
         self.reconstruct_deconv_64 = deconv( self.reconstruct_32.out_channels , n_fm_decoder_reconstruct[2] , 3 , 2 , 1 , 1 , 'kaiming' , nn.ReLU() , use_batchnorm )
         dim64 = self.conv1.out_channels + self.initial_64.out_channels + 3
         self.before_select_64 = ResidualBlock(  dim64 , kernel_size =  5 , activation = nn.LeakyReLU()   ) 
         self.reconstruct_64 = sequential( *[ResidualBlock( dim64 + n_fm_decoder_reconstruct[2] + 3 , activation = nn.LeakyReLU()) for i in range(2)])
-        self.decoded_img64 = conv( self.reconstruct_64.out_channels , 3 , 1 , 1 , 0 , None ,  None )
+        self.decoded_img64 = conv( self.reconstruct_64.out_channels , 3 , 3 , 1 , 1 , None ,  None )
 
         self.reconstruct_deconv_128 = deconv( self.reconstruct_64.out_channels , n_fm_decoder_reconstruct[3] , 3 , 2 , 1 , 1 , 'kaiming' , nn.ReLU() , use_batchnorm )
         dim128 = self.conv0.out_channels + self.initial_128.out_channels + 3
@@ -149,7 +149,7 @@ class GlobalPathway(nn.Module):
         self.conv5 = sequential( conv( self.reconstruct_128.out_channels , n_fm_decoder_conv[0] , 5 , 1 , 2 , 'kaiming' , nn.LeakyReLU() , use_batchnorm  ) , \
                 ResidualBlock(n_fm_decoder_conv[0] , kernel_size = 3 , activation = nn.LeakyReLU() ))
         self.conv6 = conv( n_fm_decoder_conv[0] , n_fm_decoder_conv[1] , 3 , 1 , 1 , 'kaiming' , nn.LeakyReLU() , use_batchnorm )
-        self.decoded_img128 = conv( n_fm_decoder_conv[1] , 3 , 1 , 1 , 0 , None , activation = None )
+        self.decoded_img128 = conv( n_fm_decoder_conv[1] , 3 , 3 , 1 , 1 , None , activation = None )
 
     def forward(self, I128 , I64 , I32 ,  local_predict , local_feature , z ):
         #encoder
